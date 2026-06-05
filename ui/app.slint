@@ -1,7 +1,7 @@
 import { Button, LineEdit } from "std-widgets.slint";
 
 component FieldLabel inherits Text {
-    color: #1f2937;
+    color: #2f3a46;
     font-size: 12px;
     font-weight: 700;
     height: 18px;
@@ -12,8 +12,8 @@ component InputBox inherits Rectangle {
     in-out property <string> value: "";
     in property <string> placeholder: "";
     height: 30px;
-    background: #ffffff;
-    border-color: #d6dde6;
+    background: #fbfcfd;
+    border-color: #cad5e1;
     border-width: 1px;
     border-radius: 4px;
 
@@ -28,7 +28,7 @@ component InputBox inherits Rectangle {
 }
 
 component PanelTitle inherits Text {
-    color: #111827;
+    color: #18212d;
     font-size: 14px;
     font-weight: 700;
     height: 22px;
@@ -37,9 +37,10 @@ component PanelTitle inherits Text {
 
 component ActionButton inherits Rectangle {
     in property <string> label: "";
+    in property <brush> fill: #1f2937;
     callback clicked();
     height: 32px;
-    background: #1f2937;
+    background: root.fill;
     border-radius: 4px;
 
     Text {
@@ -79,7 +80,7 @@ export component MainWindow inherits Window {
         y: 0px;
         width: root.width;
         height: root.height;
-        background: #f3f6f9;
+        background: #eef3f7;
     }
 
     Rectangle {
@@ -87,7 +88,7 @@ export component MainWindow inherits Window {
         y: 0px;
         width: root.width;
         height: 44px;
-        background: #17202a;
+        background: #121b24;
 
         Text {
             x: 12px;
@@ -97,6 +98,17 @@ export component MainWindow inherits Window {
             text: "LinkQinShell";
             color: white;
             font-size: 18px;
+            vertical-alignment: center;
+        }
+
+        Text {
+            x: 154px;
+            y: 0px;
+            width: 280px;
+            height: 44px;
+            text: "SSH / SFTP / Ops Workspace";
+            color: #8fa3b8;
+            font-size: 12px;
             vertical-alignment: center;
         }
 
@@ -125,7 +137,7 @@ export component MainWindow inherits Window {
         width: 320px;
         height: root.height - 74px;
         background: #ffffff;
-        border-color: #d6dde6;
+        border-color: #cbd6e2;
         border-width: 1px;
 
         PanelTitle { x: 12px; y: 10px; width: 296px; text: "Connections"; }
@@ -136,7 +148,7 @@ export component MainWindow inherits Window {
             y: 82px;
             width: 296px;
             height: 104px;
-            background: #eef3f8;
+            background: #edf4fb;
             border-radius: 6px;
             border-color: #d6dde6;
             border-width: 1px;
@@ -147,7 +159,7 @@ export component MainWindow inherits Window {
                 width: 280px;
                 height: 20px;
                 text: root.connection_summary;
-                color: #111827;
+                color: #18212d;
                 font-size: 13px;
             }
 
@@ -172,43 +184,51 @@ export component MainWindow inherits Window {
             value <=> root.master_password;
         }
 
-        FieldLabel { x: 12px; y: 268px; width: 296px; text: "New SSH connection"; }
-        Text { x: 12px; y: 292px; width: 296px; height: 16px; text: "Connection name"; color: #526173; font-size: 11px; }
+        Rectangle {
+            x: 12px;
+            y: 262px;
+            width: 296px;
+            height: 1px;
+            background: #e2e8f0;
+        }
+
+        FieldLabel { x: 12px; y: 276px; width: 296px; text: "New SSH connection"; }
+        Text { x: 12px; y: 302px; width: 296px; height: 16px; text: "Connection name"; color: #526173; font-size: 11px; }
         InputBox {
             x: 12px;
-            y: 312px;
+            y: 322px;
             width: 296px;
             placeholder: "Connection name";
             value <=> root.connection_name;
         }
-        Text { x: 12px; y: 348px; width: 296px; height: 16px; text: "Host or IP"; color: #526173; font-size: 11px; }
+        Text { x: 12px; y: 358px; width: 296px; height: 16px; text: "Host or IP"; color: #526173; font-size: 11px; }
         InputBox {
             x: 12px;
-            y: 368px;
+            y: 378px;
             width: 296px;
             placeholder: "Host or IP";
             value <=> root.connection_host;
         }
-        Text { x: 12px; y: 404px; width: 86px; height: 16px; text: "Port"; color: #526173; font-size: 11px; }
-        Text { x: 106px; y: 404px; width: 202px; height: 16px; text: "Username"; color: #526173; font-size: 11px; }
+        Text { x: 12px; y: 414px; width: 86px; height: 16px; text: "Port"; color: #526173; font-size: 11px; }
+        Text { x: 106px; y: 414px; width: 202px; height: 16px; text: "Username"; color: #526173; font-size: 11px; }
         InputBox {
             x: 12px;
-            y: 424px;
+            y: 434px;
             width: 86px;
             placeholder: "Port";
             value <=> root.connection_port;
         }
         InputBox {
             x: 106px;
-            y: 424px;
+            y: 434px;
             width: 202px;
             placeholder: "Username";
             value <=> root.connection_username;
         }
-        Text { x: 12px; y: 460px; width: 296px; height: 16px; text: "SSH password"; color: #526173; font-size: 11px; }
+        Text { x: 12px; y: 470px; width: 296px; height: 16px; text: "SSH password"; color: #526173; font-size: 11px; }
         InputBox {
             x: 12px;
-            y: 480px;
+            y: 490px;
             width: 296px;
             placeholder: "SSH password";
             value <=> root.connection_password;
@@ -216,8 +236,9 @@ export component MainWindow inherits Window {
 
         ActionButton {
             x: 12px;
-            y: 526px;
+            y: 536px;
             width: 142px;
+            fill: #2563eb;
             label: "Save SSH";
             clicked => {
                 root.save_connection_requested(
@@ -233,8 +254,9 @@ export component MainWindow inherits Window {
 
         ActionButton {
             x: 166px;
-            y: 526px;
+            y: 536px;
             width: 142px;
+            fill: #111827;
             label: "Connect First";
             clicked => { root.connect_first_requested(root.master_password); }
         }
@@ -245,14 +267,14 @@ export component MainWindow inherits Window {
         y: 44px;
         width: root.width - 620px;
         height: root.height - 74px;
-        background: #0b1117;
+        background: #071017;
 
         Rectangle {
             x: 8px;
             y: 8px;
             width: 160px;
             height: 28px;
-            background: #202a36;
+            background: #152231;
             border-radius: 4px;
 
             Text {
@@ -270,7 +292,7 @@ export component MainWindow inherits Window {
             width: parent.width - 36px;
             height: 120px;
             text: "Terminal output will appear here after an SSH session connects.\n\nSave a connection on the left, enter the same master password, then use Connect First.";
-            color: #9fb0c3;
+            color: #b1c0d2;
             font-family: "Consolas";
             font-size: 14px;
             wrap: word-wrap;
@@ -282,7 +304,7 @@ export component MainWindow inherits Window {
         y: 44px;
         width: 300px;
         height: root.height - 74px;
-        background: #ffffff;
+        background: #fdfefe;
         border-color: #d6dde6;
         border-width: 1px;
 
@@ -293,7 +315,7 @@ export component MainWindow inherits Window {
             y: 44px;
             width: 280px;
             height: 110px;
-            background: #f8fafc;
+            background: #f6f9fc;
             border-color: #d6dde6;
             border-width: 1px;
             border-radius: 6px;
@@ -318,7 +340,7 @@ export component MainWindow inherits Window {
             y: 208px;
             width: 280px;
             height: 92px;
-            background: #f8fafc;
+            background: #f6f9fc;
             border-color: #d6dde6;
             border-width: 1px;
             border-radius: 6px;
@@ -342,7 +364,7 @@ export component MainWindow inherits Window {
         y: root.height - 30px;
         width: root.width;
         height: 30px;
-        background: #e7edf3;
+        background: #e5edf5;
         border-color: #cbd5e1;
         border-width: 1px;
 
