@@ -8,8 +8,23 @@ component FieldLabel inherits Text {
     vertical-alignment: center;
 }
 
-component FormInput inherits LineEdit {
+component InputBox inherits Rectangle {
+    in-out property <string> value: "";
+    in property <string> placeholder: "";
     height: 30px;
+    background: #ffffff;
+    border-color: #d6dde6;
+    border-width: 1px;
+    border-radius: 4px;
+
+    LineEdit {
+        x: 1px;
+        y: 1px;
+        width: parent.width - 2px;
+        height: parent.height - 2px;
+        text <=> root.value;
+        placeholder-text: root.placeholder;
+    }
 }
 
 component PanelTitle inherits Text {
@@ -18,6 +33,26 @@ component PanelTitle inherits Text {
     font-weight: 700;
     height: 22px;
     vertical-alignment: center;
+}
+
+component ActionButton inherits Rectangle {
+    in property <string> label: "";
+    callback clicked();
+    height: 32px;
+    background: #1f2937;
+    border-radius: 4px;
+
+    Text {
+        text: root.label;
+        color: #ffffff;
+        font-size: 12px;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    TouchArea {
+        clicked => { root.clicked(); }
+    }
 }
 
 export component MainWindow inherits Window {
@@ -94,7 +129,7 @@ export component MainWindow inherits Window {
         border-width: 1px;
 
         PanelTitle { x: 12px; y: 10px; width: 296px; text: "Connections"; }
-        FormInput { x: 12px; y: 40px; width: 296px; placeholder-text: "Search connections"; }
+        InputBox { x: 12px; y: 40px; width: 296px; placeholder: "Search connections"; }
 
         Rectangle {
             x: 12px;
@@ -129,57 +164,61 @@ export component MainWindow inherits Window {
         }
 
         FieldLabel { x: 12px; y: 200px; width: 296px; text: "Master password"; }
-        FormInput {
+        InputBox {
             x: 12px;
             y: 222px;
             width: 296px;
-            placeholder-text: "At least 8 characters";
-            text <=> root.master_password;
+            placeholder: "At least 8 characters";
+            value <=> root.master_password;
         }
 
         FieldLabel { x: 12px; y: 268px; width: 296px; text: "New SSH connection"; }
-        FormInput {
+        Text { x: 12px; y: 292px; width: 296px; height: 16px; text: "Connection name"; color: #526173; font-size: 11px; }
+        InputBox {
             x: 12px;
-            y: 292px;
+            y: 312px;
             width: 296px;
-            placeholder-text: "Connection name";
-            text <=> root.connection_name;
+            placeholder: "Connection name";
+            value <=> root.connection_name;
         }
-        FormInput {
-            x: 12px;
-            y: 330px;
-            width: 296px;
-            placeholder-text: "Host or IP";
-            text <=> root.connection_host;
-        }
-        FormInput {
+        Text { x: 12px; y: 348px; width: 296px; height: 16px; text: "Host or IP"; color: #526173; font-size: 11px; }
+        InputBox {
             x: 12px;
             y: 368px;
+            width: 296px;
+            placeholder: "Host or IP";
+            value <=> root.connection_host;
+        }
+        Text { x: 12px; y: 404px; width: 86px; height: 16px; text: "Port"; color: #526173; font-size: 11px; }
+        Text { x: 106px; y: 404px; width: 202px; height: 16px; text: "Username"; color: #526173; font-size: 11px; }
+        InputBox {
+            x: 12px;
+            y: 424px;
             width: 86px;
-            placeholder-text: "Port";
-            text <=> root.connection_port;
+            placeholder: "Port";
+            value <=> root.connection_port;
         }
-        FormInput {
+        InputBox {
             x: 106px;
-            y: 368px;
+            y: 424px;
             width: 202px;
-            placeholder-text: "Username";
-            text <=> root.connection_username;
+            placeholder: "Username";
+            value <=> root.connection_username;
         }
-        FormInput {
+        Text { x: 12px; y: 460px; width: 296px; height: 16px; text: "SSH password"; color: #526173; font-size: 11px; }
+        InputBox {
             x: 12px;
-            y: 406px;
+            y: 480px;
             width: 296px;
-            placeholder-text: "SSH password";
-            text <=> root.connection_password;
+            placeholder: "SSH password";
+            value <=> root.connection_password;
         }
 
-        Button {
+        ActionButton {
             x: 12px;
-            y: 452px;
+            y: 526px;
             width: 142px;
-            height: 32px;
-            text: "Save SSH";
+            label: "Save SSH";
             clicked => {
                 root.save_connection_requested(
                     root.master_password,
@@ -192,12 +231,11 @@ export component MainWindow inherits Window {
             }
         }
 
-        Button {
+        ActionButton {
             x: 166px;
-            y: 452px;
+            y: 526px;
             width: 142px;
-            height: 32px;
-            text: "Connect First";
+            label: "Connect First";
             clicked => { root.connect_first_requested(root.master_password); }
         }
     }
