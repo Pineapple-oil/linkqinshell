@@ -1,5 +1,25 @@
 import { Button, LineEdit } from "std-widgets.slint";
 
+component FieldLabel inherits Text {
+    color: #1f2937;
+    font-size: 12px;
+    font-weight: 700;
+    height: 18px;
+    vertical-alignment: center;
+}
+
+component FormInput inherits LineEdit {
+    height: 30px;
+}
+
+component PanelTitle inherits Text {
+    color: #111827;
+    font-size: 14px;
+    font-weight: 700;
+    height: 22px;
+    vertical-alignment: center;
+}
+
 export component MainWindow inherits Window {
     title: "LinkQinShell";
     width: 1200px;
@@ -35,6 +55,7 @@ export component MainWindow inherits Window {
                     spacing: 8px;
 
                     Text {
+                        width: 190px;
                         text: "LinkQinShell";
                         color: white;
                         font-size: 18px;
@@ -43,12 +64,18 @@ export component MainWindow inherits Window {
 
                     Rectangle { width: 1px; background: #334155; }
 
+                    Rectangle {}
+
                     Button {
+                        width: 92px;
+                        height: 30px;
                         text: "New";
                         clicked => { root.new_connection_requested(); }
                     }
 
                     Button {
+                        width: 92px;
+                        height: 30px;
                         text: "Quick";
                         clicked => { root.quick_connect_requested(); }
                     }
@@ -59,28 +86,28 @@ export component MainWindow inherits Window {
                 spacing: 0px;
 
                 Rectangle {
-                    width: 280px;
+                    width: 320px;
                     background: #ffffff;
                     border-color: #d6dde6;
                     border-width: 1px;
 
                     VerticalLayout {
-                        padding: 10px;
-                        spacing: 8px;
+                        padding-left: 12px;
+                        padding-right: 12px;
+                        padding-top: 10px;
+                        padding-bottom: 10px;
+                        spacing: 7px;
 
-                        Text {
+                        PanelTitle {
                             text: "Connections";
-                            font-size: 14px;
-                            color: #111827;
-                            font-weight: 700;
                         }
 
-                        LineEdit {
+                        FormInput {
                             placeholder-text: "Search connections";
                         }
 
                         Rectangle {
-                            height: 92px;
+                            height: 104px;
                             background: #eef3f8;
                             border-radius: 6px;
                             border-color: #d6dde6;
@@ -99,40 +126,45 @@ export component MainWindow inherits Window {
                             }
                         }
 
-                        Text { text: "Master password"; color: #111827; font-size: 12px; font-weight: 700; }
-                        LineEdit {
+                        FieldLabel { text: "Master password"; }
+                        FormInput {
                             placeholder-text: "At least 8 characters";
                             text <=> root.master_password;
                         }
 
-                        Text { text: "New SSH connection"; color: #111827; font-size: 12px; font-weight: 700; }
-                        LineEdit {
+                        Rectangle { height: 5px; }
+
+                        FieldLabel { text: "New SSH connection"; }
+                        FormInput {
                             placeholder-text: "Connection name";
                             text <=> root.connection_name;
                         }
-                        LineEdit {
+                        FormInput {
                             placeholder-text: "Host or IP";
                             text <=> root.connection_host;
                         }
 
                         HorizontalLayout {
+                            height: 30px;
                             spacing: 6px;
-                            LineEdit {
+                            FormInput {
+                                width: 78px;
                                 placeholder-text: "Port";
                                 text <=> root.connection_port;
                             }
-                            LineEdit {
+                            FormInput {
                                 placeholder-text: "Username";
                                 text <=> root.connection_username;
                             }
                         }
 
-                        LineEdit {
+                        FormInput {
                             placeholder-text: "SSH password";
                             text <=> root.connection_password;
                         }
 
                         Button {
+                            height: 32px;
                             text: "Save SSH";
                             clicked => {
                                 root.save_connection_requested(
@@ -147,9 +179,12 @@ export component MainWindow inherits Window {
                         }
 
                         Button {
+                            height: 32px;
                             text: "Connect First";
                             clicked => { root.connect_first_requested(root.master_password); }
                         }
+
+                        Rectangle {}
                     }
                 }
 
@@ -168,6 +203,7 @@ export component MainWindow inherits Window {
                                 spacing: 4px;
                                 Rectangle {
                                     width: 160px;
+                                    height: 28px;
                                     background: #0b1117;
                                     border-radius: 4px;
                                     Text {
@@ -184,7 +220,7 @@ export component MainWindow inherits Window {
                         Rectangle {
                             background: #0b1117;
                             Text {
-                                text: "Terminal output will appear here after an SSH session connects.";
+                                text: "Terminal output will appear here after an SSH session connects.\n\nSave a connection on the left, enter the same master password, then use Connect First.";
                                 color: #9fb0c3;
                                 font-family: "Consolas";
                                 font-size: 14px;
@@ -196,7 +232,7 @@ export component MainWindow inherits Window {
                 }
 
                 Rectangle {
-                    width: 320px;
+                    width: 300px;
                     background: #ffffff;
                     border-color: #d6dde6;
                     border-width: 1px;
@@ -205,11 +241,8 @@ export component MainWindow inherits Window {
                         padding: 10px;
                         spacing: 10px;
 
-                        Text {
+                        PanelTitle {
                             text: "SFTP";
-                            font-size: 14px;
-                            font-weight: 700;
-                            color: #111827;
                         }
 
                         Rectangle {
@@ -227,11 +260,8 @@ export component MainWindow inherits Window {
                             }
                         }
 
-                        Text {
+                        PanelTitle {
                             text: "Monitor";
-                            font-size: 14px;
-                            font-weight: 700;
-                            color: #111827;
                         }
 
                         Rectangle {
