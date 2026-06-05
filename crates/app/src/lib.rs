@@ -1,5 +1,6 @@
 use linkqinshell_core::{
-    AuthMethod, Connection, ConnectionRepository, Result, SecretStore, SshAuthConfig,
+    AppError, AuthMethod, Connection, ConnectionRepository, Result, SecretStore, SshAuthConfig,
+    SshSessionConfig,
 };
 use linkqinshell_security::MasterPasswordSecretStore;
 use linkqinshell_ui_bridge::SaveConnectionRequest;
@@ -52,6 +53,44 @@ where
         })
         .collect::<Vec<_>>()
         .join("\n"))
+}
+
+pub async fn first_connection_session_config<R>(
+    repo: &R,
+    master_password: &str,
+) -> Result<SshSessionConfig>
+where
+    R: ConnectionRepository,
+{
+    let connection = repo
+        .list_active()
+        .await?
+        .into_iter()
+        .next()
+        .ok_or_else(|| AppError::Validation("no saved SSH connection is available".into()))?;
+    session_config_for_connection(connection, master_password).await
+}
+
+pub async fn session_config_for_connection(
+    connection: Connection,
+    master_password: &str,
+) -> Result<SshSessionConfig> {
+    let secret_store = MasterPasswordSecretStore::new(master_password)?;
+    let password = match &connection.auth.encrypted_password {
+        Some(secret) => {
+            let plain = secret_store.decrypt(secret).await?;
+            Some(String::from_utf8(plain).map_err(|error| {
+                AppError::Security(format!("decrypted password is not valid UTF-8: {error}"))
+            })?)
+        }
+        None => None,
+    };
+    Ok(SshSessionConfig {
+        connection,
+        password,
+        private_key: None,
+        private_key_passphrase: None,
+    })
 }
 
 #[cfg(test)]
@@ -115,5 +154,33 @@ mod tests {
 
         assert!(text.contains("prod"));
         assert!(text.contains("deploy@example.com:2222"));
+    }
+
+    #[tokio::test]
+    async fn prepares_first_saved_connection_with_decrypted_password() {
+        let pool = SqlitePool::connect("sqlite::memory:").await.unwrap();
+        run_migrations(&pool).await.unwrap();
+        let repo = SqliteConnectionRepository::new(pool);
+        let request = SaveConnectionRequest {
+            master_password: "correct horse battery staple".into(),
+            ssh_password: "server-password".into(),
+            form: NewConnectionForm {
+                name: "prod".into(),
+                host: "example.com".into(),
+                port: "22".into(),
+                username: "root".into(),
+                auth_method: "password".into(),
+            },
+        };
+
+        crate::save_connection_request(&repo, request)
+            .await
+            .unwrap();
+        let config = crate::first_connection_session_config(&repo, "correct horse battery staple")
+            .await
+            .unwrap();
+
+        assert_eq!(config.connection.name, "prod");
+        assert_eq!(config.password.as_deref(), Some("server-password"));
     }
 }

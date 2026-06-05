@@ -1,6 +1,9 @@
 use anyhow::Context;
-use linkqinshell_app::{connection_sidebar_text, save_connection_request};
-use linkqinshell_core::ConnectionRepository;
+use linkqinshell_app::{
+    connection_sidebar_text, first_connection_session_config, save_connection_request,
+};
+use linkqinshell_core::{ConnectionRepository, SshBackend};
+use linkqinshell_ssh_client::Ssh2Backend;
 use linkqinshell_storage::{
     app_data_dir, database_path, log_path, open_database, SqliteConnectionRepository,
 };
@@ -17,6 +20,7 @@ fn main() -> anyhow::Result<()> {
         .block_on(open_database())
         .context("open LinkQinShell database")?;
     let repo = SqliteConnectionRepository::new(pool);
+    let ssh_backend = Ssh2Backend::default();
     let ui = MainWindow::new().context("create main window")?;
     set_connection_summary(&ui, &runtime, &repo);
     ui.set_status_text(
@@ -50,6 +54,7 @@ fn main() -> anyhow::Result<()> {
 
     let runtime = Arc::new(runtime);
     let repo_for_save = repo.clone();
+    let runtime_for_save = runtime.clone();
     let weak = ui.as_weak();
     ui.on_save_connection_requested(
         move |master_password, name, host, port, username, ssh_password| {
@@ -65,12 +70,12 @@ fn main() -> anyhow::Result<()> {
                         auth_method: "password".into(),
                     },
                 };
-                match runtime.block_on(save_connection_request(&repo_for_save, request)) {
+                match runtime_for_save.block_on(save_connection_request(&repo_for_save, request)) {
                     Ok(connection) => {
                         ui.set_status_text(
                             format!("Saved encrypted SSH connection: {}", connection.name).into(),
                         );
-                        set_connection_summary(&ui, &runtime, &repo_for_save);
+                        set_connection_summary(&ui, &runtime_for_save, &repo_for_save);
                     }
                     Err(error) => {
                         ui.set_status_text(format!("Save failed: {error}").into());
@@ -79,6 +84,28 @@ fn main() -> anyhow::Result<()> {
             }
         },
     );
+
+    let repo_for_connect = repo.clone();
+    let ssh_for_connect = ssh_backend.clone();
+    let runtime_for_connect = runtime.clone();
+    let weak = ui.as_weak();
+    ui.on_connect_first_requested(move |master_password| {
+        if let Some(ui) = weak.upgrade() {
+            let result = runtime_for_connect.block_on(async {
+                let config =
+                    first_connection_session_config(&repo_for_connect, &master_password).await?;
+                ssh_for_connect.connect(config).await
+            });
+            match result {
+                Ok(handle) => {
+                    ui.set_status_text(format!("SSH connected. Session: {}", handle.id).into());
+                }
+                Err(error) => {
+                    ui.set_status_text(format!("SSH connect failed: {error}").into());
+                }
+            }
+        }
+    });
 
     ui.run().context("run UI")?;
     Ok(())

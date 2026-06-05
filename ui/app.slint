@@ -17,6 +17,7 @@ export component MainWindow inherits Window {
     callback new_connection_requested();
     callback quick_connect_requested();
     callback save_connection_requested(string, string, string, string, string, string);
+    callback connect_first_requested(string);
 
     Rectangle {
         background: #f4f6f8;
@@ -143,6 +144,11 @@ export component MainWindow inherits Window {
                                     root.connection_password
                                 );
                             }
+                        }
+
+                        Button {
+                            text: "Connect First";
+                            clicked => { root.connect_first_requested(root.master_password); }
                         }
                     }
                 }
