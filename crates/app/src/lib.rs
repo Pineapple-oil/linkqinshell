@@ -34,6 +34,26 @@ where
     Ok(connection)
 }
 
+pub async fn connection_sidebar_text<R>(repo: &R) -> Result<String>
+where
+    R: ConnectionRepository,
+{
+    let connections = repo.list_active().await?;
+    if connections.is_empty() {
+        return Ok("No saved connections".into());
+    }
+    Ok(connections
+        .into_iter()
+        .map(|connection| {
+            format!(
+                "{}  {}@{}:{}",
+                connection.name, connection.auth.username, connection.host, connection.port
+            )
+        })
+        .collect::<Vec<_>>()
+        .join("\n"))
+}
+
 #[cfg(test)]
 mod tests {
     use linkqinshell_core::ConnectionRepository;
@@ -69,5 +89,31 @@ mod tests {
             loaded.auth.encrypted_password.as_deref(),
             Some("server-password")
         );
+    }
+
+    #[tokio::test]
+    async fn formats_saved_connections_for_sidebar_display() {
+        let pool = SqlitePool::connect("sqlite::memory:").await.unwrap();
+        run_migrations(&pool).await.unwrap();
+        let repo = SqliteConnectionRepository::new(pool);
+        let request = SaveConnectionRequest {
+            master_password: "correct horse battery staple".into(),
+            ssh_password: "server-password".into(),
+            form: NewConnectionForm {
+                name: "prod".into(),
+                host: "example.com".into(),
+                port: "2222".into(),
+                username: "deploy".into(),
+                auth_method: "password".into(),
+            },
+        };
+
+        crate::save_connection_request(&repo, request)
+            .await
+            .unwrap();
+        let text = crate::connection_sidebar_text(&repo).await.unwrap();
+
+        assert!(text.contains("prod"));
+        assert!(text.contains("deploy@example.com:2222"));
     }
 }

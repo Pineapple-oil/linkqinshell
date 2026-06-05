@@ -7,6 +7,7 @@ export component MainWindow inherits Window {
 
     in-out property <string> status_text: "Ready";
     in-out property <string> connection_summary: "No saved connections";
+    in-out property <string> connection_list_text: "No saved connections";
     in-out property <string> master_password: "";
     in-out property <string> connection_name: "";
     in-out property <string> connection_host: "";
@@ -78,7 +79,7 @@ export component MainWindow inherits Window {
                         }
 
                         Rectangle {
-                            height: 52px;
+                            height: 92px;
                             background: #eef3f8;
                             border-radius: 6px;
                             border-color: #d6dde6;
@@ -88,7 +89,12 @@ export component MainWindow inherits Window {
                                 padding: 8px;
                                 spacing: 3px;
                                 Text { text: root.connection_summary; color: #111827; font-size: 13px; }
-                                Text { text: "Saved credentials are encrypted with the master password."; color: #526173; font-size: 11px; }
+                                Text {
+                                    text: root.connection_list_text;
+                                    color: #526173;
+                                    font-size: 11px;
+                                    wrap: word-wrap;
+                                }
                             }
                         }
 

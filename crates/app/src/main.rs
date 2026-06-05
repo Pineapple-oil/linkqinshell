@@ -1,5 +1,5 @@
 use anyhow::Context;
-use linkqinshell_app::save_connection_request;
+use linkqinshell_app::{connection_sidebar_text, save_connection_request};
 use linkqinshell_core::ConnectionRepository;
 use linkqinshell_storage::{
     app_data_dir, database_path, log_path, open_database, SqliteConnectionRepository,
@@ -92,12 +92,18 @@ fn set_connection_summary(
     match runtime.block_on(repo.list_active()) {
         Ok(connections) if connections.is_empty() => {
             ui.set_connection_summary("No saved connections".into());
+            ui.set_connection_list_text("Create and save an SSH connection below.".into());
         }
         Ok(connections) => {
             ui.set_connection_summary(format!("{} saved connection(s)", connections.len()).into());
+            match runtime.block_on(connection_sidebar_text(repo)) {
+                Ok(text) => ui.set_connection_list_text(text.into()),
+                Err(error) => ui.set_connection_list_text(format!("List error: {error}").into()),
+            }
         }
         Err(error) => {
             ui.set_connection_summary(format!("Connection list unavailable: {error}").into());
+            ui.set_connection_list_text("Storage unavailable".into());
         }
     }
 }
