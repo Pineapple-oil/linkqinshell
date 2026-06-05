@@ -1,0 +1,204 @@
+import { Button, LineEdit } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    title: "LinkQinShell";
+    width: 1200px;
+    height: 760px;
+
+    in-out property <string> status_text: "Ready";
+    callback new_connection_requested();
+    callback quick_connect_requested();
+
+    Rectangle {
+        background: #f4f6f8;
+
+        VerticalLayout {
+            spacing: 0px;
+
+            Rectangle {
+                height: 44px;
+                background: #17202a;
+
+                HorizontalLayout {
+                    padding-left: 12px;
+                    padding-right: 12px;
+                    spacing: 8px;
+
+                    Text {
+                        text: "LinkQinShell";
+                        color: white;
+                        font-size: 18px;
+                        vertical-alignment: center;
+                    }
+
+                    Rectangle { width: 1px; background: #334155; }
+
+                    Button {
+                        text: "New";
+                        clicked => { root.new_connection_requested(); }
+                    }
+
+                    Button {
+                        text: "Quick";
+                        clicked => { root.quick_connect_requested(); }
+                    }
+                }
+            }
+
+            HorizontalLayout {
+                spacing: 0px;
+
+                Rectangle {
+                    width: 280px;
+                    background: #ffffff;
+                    border-color: #d6dde6;
+                    border-width: 1px;
+
+                    VerticalLayout {
+                        padding: 10px;
+                        spacing: 8px;
+
+                        Text {
+                            text: "Connections";
+                            font-size: 14px;
+                            color: #111827;
+                            font-weight: 700;
+                        }
+
+                        LineEdit {
+                            placeholder-text: "Search connections";
+                        }
+
+                        Rectangle {
+                            height: 76px;
+                            background: #eef3f8;
+                            border-radius: 6px;
+                            border-color: #d6dde6;
+                            border-width: 1px;
+
+                            VerticalLayout {
+                                padding: 8px;
+                                spacing: 3px;
+                                Text { text: "No saved connections"; color: #111827; font-size: 13px; }
+                                Text { text: "Create SSH connection or import OpenSSH config later."; color: #526173; font-size: 11px; }
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    background: #0b1117;
+
+                    VerticalLayout {
+                        spacing: 0px;
+
+                        Rectangle {
+                            height: 36px;
+                            background: #202a36;
+
+                            HorizontalLayout {
+                                padding-left: 8px;
+                                spacing: 4px;
+                                Rectangle {
+                                    width: 160px;
+                                    background: #0b1117;
+                                    border-radius: 4px;
+                                    Text {
+                                        text: "Local workspace";
+                                        color: #d9e2ec;
+                                        horizontal-alignment: center;
+                                        vertical-alignment: center;
+                                        font-size: 12px;
+                                    }
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            background: #0b1117;
+                            Text {
+                                text: "Terminal output will appear here after an SSH session connects.";
+                                color: #9fb0c3;
+                                font-family: "Consolas";
+                                font-size: 14px;
+                                x: 18px;
+                                y: 18px;
+                            }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    width: 320px;
+                    background: #ffffff;
+                    border-color: #d6dde6;
+                    border-width: 1px;
+
+                    VerticalLayout {
+                        padding: 10px;
+                        spacing: 10px;
+
+                        Text {
+                            text: "SFTP";
+                            font-size: 14px;
+                            font-weight: 700;
+                            color: #111827;
+                        }
+
+                        Rectangle {
+                            height: 110px;
+                            background: #f8fafc;
+                            border-color: #d6dde6;
+                            border-width: 1px;
+                            border-radius: 6px;
+
+                            VerticalLayout {
+                                padding: 8px;
+                                spacing: 4px;
+                                Text { text: "Remote files"; font-size: 12px; color: #111827; }
+                                Text { text: "Directory listing, upload, download, rename, mkdir and delete are backend P0 operations."; font-size: 11px; color: #526173; wrap: word-wrap; }
+                            }
+                        }
+
+                        Text {
+                            text: "Monitor";
+                            font-size: 14px;
+                            font-weight: 700;
+                            color: #111827;
+                        }
+
+                        Rectangle {
+                            height: 92px;
+                            background: #f8fafc;
+                            border-color: #d6dde6;
+                            border-width: 1px;
+                            border-radius: 6px;
+
+                            VerticalLayout {
+                                padding: 8px;
+                                spacing: 4px;
+                                Text { text: "P0 status panel"; font-size: 12px; color: #111827; }
+                                Text { text: "Resource monitoring expands after SSH/SFTP stability."; font-size: 11px; color: #526173; wrap: word-wrap; }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                height: 30px;
+                background: #e7edf3;
+                border-color: #cbd5e1;
+                border-width: 1px;
+
+                Text {
+                    text: root.status_text;
+                    color: #334155;
+                    font-size: 11px;
+                    x: 10px;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}
