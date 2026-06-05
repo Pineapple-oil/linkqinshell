@@ -2985,6 +2985,7 @@ dependencies = [
  "linkqinshell-ui-bridge",
  "slint",
  "slint-build",
+ "sqlx",
  "tokio",
  "tracing",
  "tracing-subscriber",

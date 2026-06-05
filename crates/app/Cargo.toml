@@ -20,5 +20,8 @@ tokio.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 
+[dev-dependencies]
+sqlx.workspace = true
+
 [build-dependencies]
 slint-build.workspace = true

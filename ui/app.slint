@@ -6,8 +6,16 @@ export component MainWindow inherits Window {
     height: 760px;
 
     in-out property <string> status_text: "Ready";
+    in-out property <string> connection_summary: "No saved connections";
+    in-out property <string> master_password: "";
+    in-out property <string> connection_name: "";
+    in-out property <string> connection_host: "";
+    in-out property <string> connection_port: "22";
+    in-out property <string> connection_username: "";
+    in-out property <string> connection_password: "";
     callback new_connection_requested();
     callback quick_connect_requested();
+    callback save_connection_requested(string, string, string, string, string, string);
 
     Rectangle {
         background: #f4f6f8;
@@ -70,7 +78,7 @@ export component MainWindow inherits Window {
                         }
 
                         Rectangle {
-                            height: 76px;
+                            height: 52px;
                             background: #eef3f8;
                             border-radius: 6px;
                             border-color: #d6dde6;
@@ -79,8 +87,55 @@ export component MainWindow inherits Window {
                             VerticalLayout {
                                 padding: 8px;
                                 spacing: 3px;
-                                Text { text: "No saved connections"; color: #111827; font-size: 13px; }
-                                Text { text: "Create SSH connection or import OpenSSH config later."; color: #526173; font-size: 11px; }
+                                Text { text: root.connection_summary; color: #111827; font-size: 13px; }
+                                Text { text: "Saved credentials are encrypted with the master password."; color: #526173; font-size: 11px; }
+                            }
+                        }
+
+                        Text { text: "Master password"; color: #111827; font-size: 12px; font-weight: 700; }
+                        LineEdit {
+                            placeholder-text: "At least 8 characters";
+                            text <=> root.master_password;
+                        }
+
+                        Text { text: "New SSH connection"; color: #111827; font-size: 12px; font-weight: 700; }
+                        LineEdit {
+                            placeholder-text: "Connection name";
+                            text <=> root.connection_name;
+                        }
+                        LineEdit {
+                            placeholder-text: "Host or IP";
+                            text <=> root.connection_host;
+                        }
+
+                        HorizontalLayout {
+                            spacing: 6px;
+                            LineEdit {
+                                placeholder-text: "Port";
+                                text <=> root.connection_port;
+                            }
+                            LineEdit {
+                                placeholder-text: "Username";
+                                text <=> root.connection_username;
+                            }
+                        }
+
+                        LineEdit {
+                            placeholder-text: "SSH password";
+                            text <=> root.connection_password;
+                        }
+
+                        Button {
+                            text: "Save SSH";
+                            clicked => {
+                                root.save_connection_requested(
+                                    root.master_password,
+                                    root.connection_name,
+                                    root.connection_host,
+                                    root.connection_port,
+                                    root.connection_username,
+                                    root.connection_password
+                                );
                             }
                         }
                     }

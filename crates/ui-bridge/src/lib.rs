@@ -25,6 +25,13 @@ pub struct NewConnectionForm {
     pub auth_method: String,
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct SaveConnectionRequest {
+    pub master_password: String,
+    pub ssh_password: String,
+    pub form: NewConnectionForm,
+}
+
 impl From<&Connection> for ConnectionListItem {
     fn from(connection: &Connection) -> Self {
         Self {
@@ -57,6 +64,20 @@ impl NewConnectionForm {
     }
 }
 
+impl SaveConnectionRequest {
+    pub fn validate(&self) -> Result<u16> {
+        if self.master_password.trim().len() < 8 {
+            return Err(AppError::Validation(
+                "master password must be at least 8 characters".into(),
+            ));
+        }
+        if self.ssh_password.is_empty() {
+            return Err(AppError::Validation("ssh password is required".into()));
+        }
+        self.form.validate()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -72,5 +93,23 @@ mod tests {
         };
         let error = form.validate().unwrap_err().to_string();
         assert!(error.contains("port must be a number"));
+    }
+
+    #[test]
+    fn save_connection_request_requires_master_password_and_ssh_password() {
+        let request = SaveConnectionRequest {
+            master_password: "short".into(),
+            ssh_password: String::new(),
+            form: NewConnectionForm {
+                name: "prod".into(),
+                host: "example.com".into(),
+                port: "22".into(),
+                username: "root".into(),
+                auth_method: "password".into(),
+            },
+        };
+
+        let error = request.validate().unwrap_err().to_string();
+        assert!(error.contains("master password must be at least 8 characters"));
     }
 }
