@@ -1,0 +1,4 @@
+rust_slint_linkqinshell_dev_doc.md
+.worktrees/
+target/
+Cargo.lock
